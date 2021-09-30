@@ -1,4 +1,5 @@
 #![deny(warnings)]
+
 use std::{fs::File, io::Write};
 use serde_derive::{Deserialize, Serialize};
 
