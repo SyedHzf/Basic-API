@@ -1,32 +1,50 @@
-#![deny(warnings)]
-
-use std::{fs::File, io::Write};
-use serde_derive::{Deserialize, Serialize};
-
+mod Files;
+mod Database;
+use Files::*;
 use warp::Filter;
+use Database::*;
 
-#[derive(Deserialize, Serialize)]
-struct FileCreater {
-   file_name : String,
-    content: String,
-    extension: String,
-}
 
 #[tokio::main]
 async fn main() {
-    pretty_env_logger::init();
+    
+    let db = blank_db();
 
+    let post =   warp::path!("filecreator")
+    .and(warp::post())
+    .and(warp::body::content_length_limit(1024 * 16).and(warp::body::json()))
+    .and(with_db(db.clone())) 
+    .and_then(create_file);
+    
+    let get  =  warp::path!("filecreator")
+    .and(warp::get())
+    .and(with_db(db.clone()))
+    .and_then(get_file);
 
-    let promote = warp::post()
-        .and(warp::path("filecreator"))      
-        .and(warp::body::content_length_limit(1024 * 16))
-        .and(warp::body::json())
-        .map(|fc: FileCreater| {
-            let mut file = File::create(format!("{}.{}",fc.file_name,fc.extension)).unwrap();
-            file.write_all(fc.content.as_bytes()).unwrap();
-            warp::reply::json(&fc)
-        });
-        warp::serve(promote).run(([127, 0, 0, 1], 3030)).await
+    let put  =  warp::path!("filecreator" / String)
+    .and(warp::put())
+    .and(warp::body::content_length_limit(1024 * 16).and(warp::body::json()))
+    .and(with_db(db.clone()))
+    .and_then(update_file);
+
+    let delete =  warp::path!("filecreator" / String)
+    .and(warp::delete())
+    .and(with_db(db))
+    .and_then(delete_file);
+
+    let routes = post
+    .or(get)
+    .or(put)
+    .or(delete);
+        warp::serve(routes).run(([127, 0, 0, 1], 3030)).await
 
         
 }
+
+
+    
+
+
+
+
+    
