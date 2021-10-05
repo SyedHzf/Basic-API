@@ -15,7 +15,7 @@ use warp::http::StatusCode;
             file.content = create.content;
             file.extension = create.extension;
             Ok(StatusCode::CREATED)
-    }
+    } 
 }
 
 // Getting file

@@ -6,7 +6,7 @@ use tokio::sync::Mutex;
 #[derive(Debug, Deserialize, Serialize, Clone)]
     pub struct FileCreator {
        pub file_name : String,
-        pub content: String,
+        pub content: String, 
        pub extension: String,
  }
     pub type Db = Arc<Mutex<FileCreator>>;
