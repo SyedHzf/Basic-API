@@ -3,6 +3,7 @@ mod Database;
 use Files::*;
 use warp::Filter;
 use Database::*;
+use std::sync::Arc;
 
 
 #[tokio::main]
@@ -13,7 +14,7 @@ async fn main() {
     let post =   warp::path!("filecreator")
     .and(warp::post())
     .and(warp::body::content_length_limit(1024 * 16).and(warp::body::json()))
-    .and(with_db(db)) /*
+    .and(with_db(db.clone())) /*
     here is an issue ,
      i can't use db variable due to borrowship ,
       so i'm trying to use Arc pointer on it
