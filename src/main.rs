@@ -14,11 +14,7 @@ async fn main() {
     let post =   warp::path!("filecreator")
     .and(warp::post())
     .and(warp::body::content_length_limit(1024 * 16).and(warp::body::json()))
-    .and(with_db(db.clone())) /*
-    here is an issue ,
-     i can't use db variable due to borrowship ,
-      so i'm trying to use Arc pointer on it
-        */
+    .and(with_db(db.clone()))
     .and_then(create_file);
     
     let get  =  warp::path!("filecreator")
